@@ -1,10 +1,13 @@
 # SumSnap
 
+<p align="center"><img src="docs/demo.gif" width="700" alt="Zaznaczenie kolumny kwot i wynik SumSnap"></p>
+
 Zaznacz obszar na ekranie → dostajesz sumę widocznych kwot.
 
 Aplikacja siedzi w pasku menu (ikona ∑). Po naciśnięciu skrótu kursor zmienia się
 w celownik (jak przy ⌘⇧4), zaznaczasz obszar, a po chwili w prawym górnym rogu
 pojawia się suma — od razu skopiowana do schowka.
+Kwoty ujemne są odejmowane, a pod sumą widać osobno wpływy (+) i wydatki (−).
 
 Cały OCR robi się lokalnie (framework Vision), nic nie wychodzi do sieci.
 
@@ -37,6 +40,7 @@ aplikację, SumSnap powie o tym przy starcie.
 
 - **Zsumuj zaznaczenie** — to samo co skrót
 - **Rozpoznane liczby** — lista tego, co zsumował, plus to, co pominął (do weryfikacji)
+- **Sumuj bez znaków** — zamiast salda łączna wysokość kwot (wartości bezwzględne)
 - **Kopiuj sumę** / **Kopiuj wszystkie liczby** — druga opcja wkleja kolumnę do Excela
 
 ## Jak rozpoznaje kwoty

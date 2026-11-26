@@ -16,6 +16,9 @@ final class HUD {
     struct Content {
         var title: String
         var subtitle: String
+        /// Wpływy i wydatki pod główną kwotą (np. "+3 468,00", "-870,80").
+        var plus: String? = nil
+        var minus: String? = nil
         var symbol: String
         var tint: NSColor
         var duration: TimeInterval = 4
@@ -26,7 +29,7 @@ final class HUD {
         panel?.orderOut(nil)
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 320, height: 96),
+            contentRect: NSRect(x: 0, y: 0, width: 320, height: 110),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -108,7 +111,23 @@ final class HUD {
         subtitle.lineBreakMode = .byTruncatingTail
         subtitle.translatesAutoresizingMaskIntoConstraints = false
 
-        let stack = NSStackView(views: [title, subtitle])
+        var rows: [NSView] = [title]
+        if content.plus != nil || content.minus != nil {
+            let parts = [(content.plus, NSColor.systemGreen), (content.minus, NSColor.systemRed)]
+                .compactMap { text, color -> NSTextField? in
+                    guard let text else { return nil }
+                    let f = NSTextField(labelWithString: text)
+                    f.font = .monospacedDigitSystemFont(ofSize: 13, weight: .medium)
+                    f.textColor = color
+                    return f
+                }
+            let line = NSStackView(views: parts)
+            line.orientation = .horizontal
+            line.spacing = 10
+            rows.append(line)
+        }
+        rows.append(subtitle)
+        let stack = NSStackView(views: rows)
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 2

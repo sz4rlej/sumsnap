@@ -10,12 +10,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var busy = false
 
     private let hotKeyDefaultsKey = "hotKeyPresetIndex"
-    private let signedSumDefaultsKey = "useSignedSum"
+    private let absoluteSumDefaultsKey = "useAbsoluteSum"
 
-    /// Domyślnie sumujemy wartości bezwzględne — na wyciągu kolumna wydatków
-    /// jest ujemna, a interesuje nas ich łączna wysokość, nie saldo.
+    /// Domyślnie sumujemy ze znakami (wpływy minus wydatki).
+    /// Wartości bezwzględne można włączyć w menu.
     private var useAbsoluteSum: Bool {
-        !UserDefaults.standard.bool(forKey: signedSumDefaultsKey)
+        UserDefaults.standard.bool(forKey: absoluteSumDefaultsKey)
     }
 
     private func total(of result: ParseResult) -> Decimal {
@@ -129,9 +129,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         copySum()
 
         var parts = ["\(result.numbers.count) \(pluralize(result.numbers.count))"]
-        if useAbsoluteSum && result.hasNegatives {
-            parts.append("ze znakami: \(NumberFormat.display(result.sum))")
-        }
         if !result.skipped.isEmpty {
             parts.append("pominięto \(result.skipped.count) bez groszy")
         }
@@ -140,6 +137,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         HUD.shared.show(.init(
             title: NumberFormat.display(total(of: result)),
             subtitle: parts.joined(separator: " · "),
+            plus: result.hasNegatives && result.positiveSum > 0 ? "+\(NumberFormat.display(result.positiveSum))" : nil,
+            minus: result.hasNegatives && result.positiveSum > 0 ? NumberFormat.display(result.negativeSum) : nil,
             symbol: "sum",
             tint: .controlAccentColor,
             duration: 4
@@ -302,7 +301,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func toggleSumMode() {
-        UserDefaults.standard.set(useAbsoluteSum, forKey: signedSumDefaultsKey)
+        UserDefaults.standard.set(!useAbsoluteSum, forKey: absoluteSumDefaultsKey)
         rebuildMenu()
         if let result = lastResult, !result.isEmpty {
             copySum()

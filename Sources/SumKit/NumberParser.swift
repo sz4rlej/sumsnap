@@ -25,6 +25,12 @@ public struct ParseResult: Equatable, Sendable {
     /// Suma wartości bezwzględnych — ile łącznie „przeszło", niezależnie od kierunku.
     public var absoluteSum: Decimal { numbers.reduce(Decimal(0)) { $0 + $1.value.magnitude } }
 
+    /// Suma wpływów (liczb dodatnich).
+    public var positiveSum: Decimal { numbers.filter { $0.value > 0 }.reduce(Decimal(0)) { $0 + $1.value } }
+
+    /// Suma wydatków (liczb ujemnych), jako liczba ujemna.
+    public var negativeSum: Decimal { numbers.filter { $0.value < 0 }.reduce(Decimal(0)) { $0 + $1.value } }
+
     public var isEmpty: Bool { numbers.isEmpty }
     public var hasNegatives: Bool { numbers.contains { $0.value < 0 } }
 
